@@ -3,6 +3,9 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Text, Html } from '@react-three/drei';
 import { Sensor } from '../types';
 import * as THREE from 'three';
+import { useLoader } from '@react-three/fiber';
+import { STLLoader } from 'three-stdlib';
+
 
 interface SensorVisualizationProps {
   sensors: Sensor[];
@@ -67,6 +70,20 @@ function SensorNode({ sensor, position, onClick }: {
   );
 }
 
+function STLModel({ url }: { url: string }) {
+  const geometry = useLoader(STLLoader, url);
+  return (
+    <mesh
+      geometry={geometry}
+      scale={[0.007, 0.007, 0.007]} // 10 times smaller
+      castShadow
+      receiveShadow
+    >
+      <meshStandardMaterial />
+    </mesh>
+  );
+}
+
 const SensorVisualization: React.FC<SensorVisualizationProps> = ({ sensors, onSensorClick }) => {
   // Calculate positions in a circular layout
   const getPosition = (index: number, total: number): [number, number, number] => {
@@ -84,6 +101,10 @@ const SensorVisualization: React.FC<SensorVisualizationProps> = ({ sensors, onSe
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
         <pointLight position={[-10, -10, -10]} intensity={0.5} />
+
+        <group position={[-5, -4, -3]} rotation={[0, 0, 0]}>
+          <STLModel url="../jaabouk.STL" />
+        </group>
 
         {/* Sensor nodes */}
         {sensors.map((sensor, index) => (
