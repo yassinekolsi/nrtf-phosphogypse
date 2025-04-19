@@ -41,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({ alerts, onViewAlerts, onToggle3D, is3DA
               onClick={() => !is3DActive && onToggle3D()}
             >
               <Pipe className="h-5 w-5 mr-1" />
-              <span>Pipe View</span>
+              <span>Product Overview</span>
             </button>
             <button
               className="hover:bg-white/10 rounded-md px-3 py-2 flex items-center transition-colors relative"
