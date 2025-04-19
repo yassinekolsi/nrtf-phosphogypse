@@ -85,12 +85,6 @@ const SensorVisualization: React.FC<SensorVisualizationProps> = ({ sensors, onSe
         <pointLight position={[10, 10, 10]} intensity={1} />
         <pointLight position={[-10, -10, -10]} intensity={0.5} />
 
-        {/* Center platform */}
-        <mesh position={[0, -0.1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[6, 6, 0.2, 32]} />
-          <meshStandardMaterial color="#E5E7EB" />
-        </mesh>
-
         {/* Sensor nodes */}
         {sensors.map((sensor, index) => (
           <SensorNode
