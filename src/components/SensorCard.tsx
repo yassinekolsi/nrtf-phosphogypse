@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Droplets, Thermometer, Waves, Gauge, FlaskRound as Flask } from 'lucide-react';
+import { Activity, Droplets, Thermometer, Waves, Gauge, FlaskRound as Flask, Vibrate, RotateCw } from 'lucide-react';
 import { Sensor } from '../types';
 import Card from './ui/Card';
 import StatusBadge from './ui/StatusBadge';
@@ -25,6 +25,10 @@ const SensorCard: React.FC<SensorCardProps> = ({ sensor, onClick }) => {
         return <Gauge className="h-5 w-5 text-purple-600" />;
       case 'phosphogypsum':
         return <Flask className="h-5 w-5 text-indigo-600" />;
+      case 'vibration':
+        return <Vibrate className="h-5 w-5 text-pink-600" />;
+      case 'rpm':
+        return <RotateCw className="h-5 w-5 text-cyan-600" />;
     }
   };
 
@@ -41,6 +45,12 @@ const SensorCard: React.FC<SensorCardProps> = ({ sensor, onClick }) => {
     if (onClick) {
       onClick(sensor.id);
     }
+  };
+
+  const getChangeColor = (change: number) => {
+    if (change > 10) return 'text-red-600';
+    if (change < -10) return 'text-blue-600';
+    return 'text-gray-600';
   };
 
   return (
@@ -63,6 +73,19 @@ const SensorCard: React.FC<SensorCardProps> = ({ sensor, onClick }) => {
           status={sensor.currentReading.status}
           size="lg"
         />
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+        <div>
+          <span className="text-gray-500">Mean:</span>
+          <span className="ml-2 font-medium">{sensor.currentReading.mean}</span>
+        </div>
+        <div>
+          <span className="text-gray-500">Change:</span>
+          <span className={`ml-2 font-medium ${getChangeColor(sensor.currentReading.change || 0)}`}>
+            {sensor.currentReading.change?.toFixed(1)}%
+          </span>
+        </div>
       </div>
 
       <div className="mt-3 text-sm text-gray-600">

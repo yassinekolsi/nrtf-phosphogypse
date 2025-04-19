@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { mockSensors, mockAlerts, mockRecommendations } from '../data/mockData';
+import { mockSensors, mockRecommendations } from '../data/mockData';
 import SensorCard from './SensorCard';
 import AlertsList from './AlertsList';
 import SensorChart from './SensorChart';
@@ -9,13 +9,21 @@ import { Alert, Sensor, TreatmentRecommendation } from '../types';
 interface DashboardProps {
   showAlertsPanel: boolean;
   onCloseAlertsPanel: () => void;
+  onAlertAcknowledge: (alertId: string) => void;
+  alerts: Alert[];
+  recommendations: TreatmentRecommendation[];
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ showAlertsPanel, onCloseAlertsPanel }) => {
+const Dashboard: React.FC<DashboardProps> = ({
+  showAlertsPanel,
+  onCloseAlertsPanel,
+  onAlertAcknowledge,
+  alerts,
+  recommendations,
+}) => {
   const [sensors, setSensors] = useState<Sensor[]>(mockSensors);
-  const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
-  const [recommendations, setRecommendations] = useState<TreatmentRecommendation[]>(mockRecommendations);
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
+  const [selectedRecommendation, setSelectedRecommendation] = useState<TreatmentRecommendation | null>(null);
 
   useEffect(() => {
     const handleSelectSensor = (event: CustomEvent<string>) => {
@@ -38,23 +46,39 @@ const Dashboard: React.FC<DashboardProps> = ({ showAlertsPanel, onCloseAlertsPan
     }
   };
 
-  const handleAlertAcknowledge = (alertId: string) => {
-    setAlerts(
-      alerts.map((alert) => {
-        if (alert.id === alertId) {
-          return { ...alert, acknowledged: true };
-        }
-        return alert;
-      })
-    );
+  const handleViewRecommendation = (recommendation: TreatmentRecommendation) => {
+    setSelectedRecommendation(recommendation);
   };
 
   return (
     <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
       {/* Main content */}
       <div className={`flex-1 ${showAlertsPanel ? 'md:w-2/3' : 'w-full'}`}>
-        {/* Selected sensor detail or summary */}
-        {selectedSensor ? (
+        {selectedRecommendation ? (
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">Treatment Recommendation</h2>
+              <button
+                className="text-blue-600 hover:text-blue-800 text-sm"
+                onClick={() => setSelectedRecommendation(null)}
+              >
+                Back
+              </button>
+            </div>
+            <RecommendationCard recommendation={selectedRecommendation} />
+            {selectedRecommendation.relatedSensors.map((sensorId) => {
+              const sensor = sensors.find((s) => s.id === sensorId);
+              if (sensor) {
+                return (
+                  <div key={sensor.id} className="mt-4">
+                    <SensorCard sensor={sensor} onClick={handleSensorClick} />
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
+        ) : selectedSensor ? (
           <div className="mb-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">Sensor Details</h2>
@@ -153,16 +177,6 @@ const Dashboard: React.FC<DashboardProps> = ({ showAlertsPanel, onCloseAlertsPan
             </div>
           </>
         )}
-
-        {/* Treatment recommendations */}
-        <div>
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Treatment Recommendations</h2>
-          <div className="grid grid-cols-1 gap-4">
-            {recommendations.map((recommendation) => (
-              <RecommendationCard key={recommendation.id} recommendation={recommendation} />
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Alerts panel - conditionally shown */}
@@ -177,7 +191,12 @@ const Dashboard: React.FC<DashboardProps> = ({ showAlertsPanel, onCloseAlertsPan
               Close
             </button>
           </div>
-          <AlertsList alerts={alerts} onAcknowledge={handleAlertAcknowledge} />
+          <AlertsList 
+            alerts={alerts} 
+            recommendations={recommendations}
+            onAcknowledge={onAlertAcknowledge}
+            onViewRecommendation={handleViewRecommendation}
+          />
         </div>
       )}
     </div>

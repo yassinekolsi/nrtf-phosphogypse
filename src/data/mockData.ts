@@ -2,49 +2,79 @@ import { Alert, Sensor, SensorReading, TreatmentRecommendation } from '../types'
 
 const generateReading = (
   id: string,
-  type: 'ph' | 'radiation' | 'temperature' | 'humidity' | 'pressure' | 'phosphogypsum'
+  type: 'ph' | 'radiation' | 'temperature' | 'humidity' | 'pressure' | 'phosphogypsum' | 'vibration' | 'rpm'
 ): SensorReading => {
   const now = new Date();
   let value = 0;
   let unit = '';
   let status: 'normal' | 'warning' | 'critical' = 'normal';
+  let mean = 0;
+  let change = 0;
 
   switch (type) {
     case 'ph':
       value = 5 + Math.random() * 4;
       unit = 'pH';
+      mean = 7;
+      change = ((value - mean) / mean) * 100;
       status = value < 6 || value > 8 ? 'warning' : 'normal';
       status = value < 5.5 || value > 8.5 ? 'critical' : status;
       break;
     case 'radiation':
       value = Math.random() * 150;
       unit = 'μSv/h';
+      mean = 75;
+      change = ((value - mean) / mean) * 100;
       status = value > 80 ? 'warning' : 'normal';
       status = value > 120 ? 'critical' : status;
       break;
     case 'temperature':
       value = 15 + Math.random() * 30;
       unit = '°C';
+      mean = 25;
+      change = ((value - mean) / mean) * 100;
       status = value > 35 ? 'warning' : 'normal';
       status = value > 40 ? 'critical' : status;
       break;
     case 'humidity':
       value = 30 + Math.random() * 50;
       unit = '%';
+      mean = 50;
+      change = ((value - mean) / mean) * 100;
       status = value > 70 ? 'warning' : 'normal';
       status = value > 75 ? 'critical' : status;
       break;
     case 'pressure':
       value = 980 + Math.random() * 60;
       unit = 'hPa';
+      mean = 1013;
+      change = ((value - mean) / mean) * 100;
       status = value < 1000 ? 'warning' : 'normal';
       status = value < 990 ? 'critical' : status;
       break;
     case 'phosphogypsum':
       value = Math.random() * 1000;
       unit = 'mg/m³';
+      mean = 500;
+      change = ((value - mean) / mean) * 100;
       status = value > 500 ? 'warning' : 'normal';
       status = value > 750 ? 'critical' : status;
+      break;
+    case 'vibration':
+      value = Math.random() * 100;
+      unit = 'Hz';
+      mean = 50;
+      change = ((value - mean) / mean) * 100;
+      status = value > 70 ? 'warning' : 'normal';
+      status = value > 85 ? 'critical' : status;
+      break;
+    case 'rpm':
+      value = 1000 + Math.random() * 2000;
+      unit = 'RPM';
+      mean = 2000;
+      change = ((value - mean) / mean) * 100;
+      status = value > 2500 ? 'warning' : 'normal';
+      status = value > 2800 ? 'critical' : status;
       break;
   }
 
@@ -54,6 +84,8 @@ const generateReading = (
     value: parseFloat(value.toFixed(2)),
     unit,
     status,
+    mean: parseFloat(mean.toFixed(2)),
+    change: parseFloat(change.toFixed(2))
   };
 };
 
@@ -134,6 +166,28 @@ export const mockSensors: Sensor[] = [
     currentReading: generateReading('r007', 'phosphogypsum'),
     description: 'Measures phosphogypsum concentration',
     role: 'Monitors waste product levels and ensures proper processing'
+  },
+  {
+    id: 's008',
+    name: 'Pump Vibration',
+    type: 'vibration',
+    location: 'Main Pump Station',
+    status: 'online',
+    lastUpdated: new Date().toISOString(),
+    currentReading: generateReading('r008', 'vibration'),
+    description: 'Monitors pump vibration levels',
+    role: 'Detects potential mechanical issues and prevents equipment failure'
+  },
+  {
+    id: 's009',
+    name: 'Motor RPM',
+    type: 'rpm',
+    location: 'Primary Drive Motor',
+    status: 'online',
+    lastUpdated: new Date().toISOString(),
+    currentReading: generateReading('r009', 'rpm'),
+    description: 'Measures motor rotation speed',
+    role: 'Ensures optimal motor performance and identifies irregularities'
   }
 ];
 
@@ -146,6 +200,7 @@ export const mockAlerts: Alert[] = [
     timestamp: new Date(Date.now() - 1800000).toISOString(),
     sensorId: 's001',
     acknowledged: false,
+    recommendationId: 'tr001'
   },
   {
     id: 'a002',
@@ -155,6 +210,7 @@ export const mockAlerts: Alert[] = [
     timestamp: new Date(Date.now() - 3600000).toISOString(),
     sensorId: 's002',
     acknowledged: true,
+    recommendationId: 'tr002'
   },
   {
     id: 'a003',
@@ -164,6 +220,7 @@ export const mockAlerts: Alert[] = [
     timestamp: new Date(Date.now() - 86400000).toISOString(),
     sensorId: 's004',
     acknowledged: false,
+    recommendationId: 'tr004'
   },
   {
     id: 'a004',
@@ -173,6 +230,7 @@ export const mockAlerts: Alert[] = [
     timestamp: new Date(Date.now() - 7200000).toISOString(),
     sensorId: 's003',
     acknowledged: false,
+    recommendationId: 'tr003'
   },
   {
     id: 'a005',
@@ -182,6 +240,27 @@ export const mockAlerts: Alert[] = [
     timestamp: new Date().toISOString(),
     sensorId: 's007',
     acknowledged: false,
+    recommendationId: 'tr005'
+  },
+  {
+    id: 'a006',
+    title: 'Abnormal Vibration Detected',
+    message: 'Pump vibration levels have exceeded normal operating range',
+    severity: 'warning',
+    timestamp: new Date().toISOString(),
+    sensorId: 's008',
+    acknowledged: false,
+    recommendationId: 'tr006'
+  },
+  {
+    id: 'a007',
+    title: 'Motor Speed Fluctuation',
+    message: 'Unusual variations in motor RPM detected',
+    severity: 'warning',
+    timestamp: new Date().toISOString(),
+    sensorId: 's009',
+    acknowledged: false,
+    recommendationId: 'tr007'
   }
 ];
 
@@ -194,6 +273,7 @@ export const mockRecommendations: TreatmentRecommendation[] = [
     priority: 'high',
     timestamp: new Date().toISOString(),
     relatedSensors: ['s001', 's006'],
+    alertId: 'a001'
   },
   {
     id: 'tr002',
@@ -203,6 +283,7 @@ export const mockRecommendations: TreatmentRecommendation[] = [
     priority: 'critical',
     timestamp: new Date(Date.now() - 3600000).toISOString(),
     relatedSensors: ['s002'],
+    alertId: 'a002'
   },
   {
     id: 'tr003',
@@ -212,6 +293,7 @@ export const mockRecommendations: TreatmentRecommendation[] = [
     priority: 'medium',
     timestamp: new Date(Date.now() - 86400000).toISOString(),
     relatedSensors: ['s003'],
+    alertId: 'a004'
   },
   {
     id: 'tr004',
@@ -221,6 +303,7 @@ export const mockRecommendations: TreatmentRecommendation[] = [
     priority: 'low',
     timestamp: new Date(Date.now() - 172800000).toISOString(),
     relatedSensors: ['s004'],
+    alertId: 'a003'
   },
   {
     id: 'tr005',
@@ -230,12 +313,33 @@ export const mockRecommendations: TreatmentRecommendation[] = [
     priority: 'high',
     timestamp: new Date().toISOString(),
     relatedSensors: ['s007', 's005'],
+    alertId: 'a005'
   },
+  {
+    id: 'tr006',
+    title: 'Inspect Pump Assembly',
+    description:
+      'High vibration levels indicate potential mechanical issues. Schedule immediate inspection of pump bearings and alignment.',
+    priority: 'high',
+    timestamp: new Date().toISOString(),
+    relatedSensors: ['s008'],
+    alertId: 'a006'
+  },
+  {
+    id: 'tr007',
+    title: 'Motor Drive Maintenance',
+    description:
+      'RPM fluctuations suggest potential drive system issues. Check motor controller settings and mechanical connections.',
+    priority: 'medium',
+    timestamp: new Date().toISOString(),
+    relatedSensors: ['s009'],
+    alertId: 'a007'
+  }
 ];
 
 export const generateHistoricalData = (
   sensorId: string,
-  type: 'ph' | 'radiation' | 'temperature' | 'humidity' | 'pressure' | 'phosphogypsum',
+  type: 'ph' | 'radiation' | 'temperature' | 'humidity' | 'pressure' | 'phosphogypsum' | 'vibration' | 'rpm',
   hours = 24
 ) => {
   const data: SensorReading[] = [];
@@ -276,6 +380,14 @@ export const generateHistoricalData = (
         case 'phosphogypsum':
           reading.status = reading.value > 500 ? 'warning' : 'normal';
           reading.status = reading.value > 750 ? 'critical' : reading.status;
+          break;
+        case 'vibration':
+          reading.status = reading.value > 70 ? 'warning' : 'normal';
+          reading.status = reading.value > 85 ? 'critical' : reading.status;
+          break;
+        case 'rpm':
+          reading.status = reading.value > 2500 ? 'warning' : 'normal';
+          reading.status = reading.value > 2800 ? 'critical' : reading.status;
           break;
       }
     }

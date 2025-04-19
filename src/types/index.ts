@@ -4,12 +4,14 @@ export interface SensorReading {
   value: number;
   unit: string;
   status: 'normal' | 'warning' | 'critical';
+  mean?: number;
+  change?: number;
 }
 
 export interface Sensor {
   id: string;
   name: string;
-  type: 'ph' | 'radiation' | 'temperature' | 'humidity' | 'pressure' | 'phosphogypsum';
+  type: 'ph' | 'radiation' | 'temperature' | 'humidity' | 'pressure' | 'phosphogypsum' | 'vibration' | 'rpm';
   location: string;
   currentReading: SensorReading;
   status: 'online' | 'offline' | 'maintenance';
@@ -25,6 +27,7 @@ export interface TreatmentRecommendation {
   priority: 'low' | 'medium' | 'high' | 'critical';
   timestamp: string;
   relatedSensors: string[];
+  alertId?: string;
 }
 
 export interface Alert {
@@ -35,4 +38,13 @@ export interface Alert {
   timestamp: string;
   sensorId: string;
   acknowledged: boolean;
+  recommendationId?: string;
+}
+
+export interface AppSettings {
+  darkMode: boolean;
+  notificationsEnabled: boolean;
+  autoRefreshInterval: number;
+  dataRetentionDays: number;
+  soundAlerts: boolean;
 }

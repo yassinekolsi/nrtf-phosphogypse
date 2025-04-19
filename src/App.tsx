@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
 import SensorVisualization from './components/SensorVisualization';
-import { mockAlerts, mockSensors } from './data/mockData';
+import { mockAlerts, mockSensors, mockRecommendations } from './data/mockData';
+import { Alert } from './types';
 
 function App() {
   const [alerts, setAlerts] = useState(mockAlerts);
@@ -10,11 +11,17 @@ function App() {
   const [show3D, setShow3D] = useState(false);
 
   const handleViewAlerts = () => {
-    setShowAlertsPanel(true);
+    setShowAlertsPanel(!showAlertsPanel);
   };
 
   const handleCloseAlertsPanel = () => {
     setShowAlertsPanel(false);
+  };
+
+  const handleAlertAcknowledge = (alertId: string) => {
+    setAlerts(alerts.map(alert => 
+      alert.id === alertId ? { ...alert, acknowledged: true } : alert
+    ));
   };
 
   return (
@@ -29,16 +36,14 @@ function App() {
         {show3D ? (
           <div className="container mx-auto px-4 py-6">
             <div className="mb-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">3D Sensor Visualization</h2>
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Pipe View Visualization</h2>
               <p className="text-gray-600 mb-4">
-                Interactive 3D view of all sensors. Click on any sensor to view details. 
-                Drag to rotate, scroll to zoom.
+                Interactive view of all sensors along the process pipeline. Click on any sensor to view details.
               </p>
               <SensorVisualization 
                 sensors={mockSensors}
                 onSensorClick={(sensorId) => {
                   setShow3D(false);
-                  // Allow time for transition before showing sensor details
                   setTimeout(() => {
                     const event = new CustomEvent('select-sensor', { detail: sensorId });
                     window.dispatchEvent(event);
@@ -50,7 +55,10 @@ function App() {
         ) : (
           <Dashboard 
             showAlertsPanel={showAlertsPanel} 
-            onCloseAlertsPanel={handleCloseAlertsPanel} 
+            onCloseAlertsPanel={handleCloseAlertsPanel}
+            onAlertAcknowledge={handleAlertAcknowledge}
+            alerts={alerts}
+            recommendations={mockRecommendations}
           />
         )}
       </main>
