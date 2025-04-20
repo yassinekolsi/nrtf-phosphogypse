@@ -17,11 +17,11 @@ const Header: React.FC<HeaderProps> = ({ alerts, onViewAlerts, onToggle3D, is3DA
   return (
     <header className="bg-gradient-to-r from-blue-900 to-blue-800 text-white shadow-md">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center py-3">
-          <div className="flex items-center">
-            <Activity className="h-8 w-8 mr-2" />
-            <h1 className="text-xl font-bold">PhosphoSense</h1>
-          </div>
+      <div className="flex justify-between items-center py-3">
+        <div className="flex items-center">
+          <img src="../images/logo.svg" alt="PhosphoSense Logo" className="h-8 w-8 mr-2" />
+          <h1 className="text-xl font-bold">PhosphoSense</h1>
+        </div>
 
           {/* Desktop navigation */}
           <nav className="hidden md:flex items-center space-x-4">
@@ -85,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({ alerts, onViewAlerts, onToggle3D, is3DA
               onClick={() => !is3DActive && onToggle3D()}
             >
               <Pipe className="h-5 w-5 mr-3" />
-              <span>Pipe View</span>
+              <span>Product Overview</span>
             </button>
             <button
               className="w-full text-left hover:bg-white/10 rounded-md px-3 py-2 flex items-center transition-colors relative"

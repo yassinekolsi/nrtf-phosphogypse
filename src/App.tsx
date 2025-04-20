@@ -34,13 +34,12 @@ function App() {
       />
       <main className="flex-1">
         {show3D ? (
-          <div className="container mx-auto px-4 py-6">
-            <div className="mb-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Pipe View Visualization</h2>
-              <p className="text-gray-600 mb-4">
-                Interactive view of all sensors along the process pipeline. Click on any sensor to view details.
-              </p>
-              <SensorVisualization 
+          
+          <SensorVisualization 
+            showAlertsPanel={showAlertsPanel} 
+            onCloseAlertsPanel={handleCloseAlertsPanel}
+            onAlertAcknowledge={handleAlertAcknowledge}
+            alerts={alerts}
                 sensors={mockSensors}
                 onSensorClick={(sensorId) => {
                   setShow3D(false);
@@ -50,8 +49,6 @@ function App() {
                   }, 100);
                 }}
               />
-            </div>
-          </div>
         ) : (
           <Dashboard 
             showAlertsPanel={showAlertsPanel} 
