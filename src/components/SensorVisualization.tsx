@@ -50,8 +50,8 @@ const SensorVisualization: React.FC<SensorVisualizationProps> = () => {
     <div className="container mx-auto px-4 py-10">
       <div className="mb-10 text-center">
         <h2 className="text-3xl font-bold text-gray-800 mb-4">Product Overview</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Explore the interactive view of all sensors along the process pipeline. Click on any sensor zone to view detailed information and recommendations.
+        <p className="text-gray-600 ">
+        This integrated system is engineered to recover phosphogypsum from the liquid waste discharged by the Groupe Chimique Tunisien (GCT). It starts with Low Head Dams, which slow down water flow and promote the sedimentation of large particles. A Floating Boom captures flocs forming on the water surface, allowing the Conveyor Belt to efficiently extract them. In parallel, a Heavy Material Collection zone targets high-density waste—particularly phosphogypsum—which is separated using a Hydrocyclone. To enhance floc formation and neutralize acidity in the waste, Lime (CaO) is added, binding fine particles and mitigating environmental harm. This system provides a cost-effective, environmentally conscious solution for treating and valorizing industrial discharge from GCT.
         </p>
       </div>
 
@@ -79,6 +79,9 @@ const SensorVisualization: React.FC<SensorVisualizationProps> = () => {
             <p className="mt-4 text-gray-600 text-sm text-center px-2">{section.description}</p>
           </div>
         ))}
+        <div style={{ paddingBottom: '70px' }} className="container mx-auto px-16 py-6">
+  {/* Your existing content */}
+</div>
       </div>
     </div>
   );
